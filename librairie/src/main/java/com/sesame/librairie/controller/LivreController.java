@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.sesame.librairie.model.Livre;
+import com.sesame.librairie.service.LivreService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,39 +17,25 @@ import java.util.List;
 @RestController
 @RequestMapping("api/livres")
 public class LivreController {
-    // Les Livres sont gardés en mémoire (pas encore en base de données)
-    private final List<Livre> livres = new ArrayList<>();
+    private final LivreService livreService;
 
-    public LivreController() {
-        livres.add(new Livre(1L, "Les Misérables", "Victor Hugo", 1862));
-        livres.add(new Livre(2L, "Notre-Dame de Paris", "Victor Hugo", 1831));
-        livres.add(new Livre(3L, "L'Étranger", "Albert Camus", 1942));
-        livres.add(new Livre(4L, "La Peste", "Albert Camus", 1947));
-        livres.add(new Livre(5L, "Le Petit Prince", "Antoine de Saint-Exupéry", 1943));
-    }
-    @GetMapping("/bonjour")
-    public String bonjour() {
-        return "Bonjour depuis la bibliothèque";
+    // Injection par constructeur : Spring fournit le service
+    public LivreController(LivreService livreService) {
+        this.livreService = livreService;
     }
     @GetMapping
     public List<Livre> lister(
             @RequestParam(name = "auteur", required = false) String auteur) {
-        if (auteur == null) {
-            return livres;
-        }
-        return livres.stream()
-                .filter(l -> l.getAuteur().toLowerCase()
-                        .contains(auteur.toLowerCase()))
-                .toList();
+        return livreService.lister(auteur);
+    }
+    @GetMapping("/nombre")
+    public int compter() {
+        return livreService.compter();
     }
     @GetMapping("/{id}")
     public ResponseEntity<Livre> trouver(@PathVariable("id") Long id) {
-        return livres.stream()
-                .filter(l -> l.getId().equals(id))
-                .findFirst()
+        return livreService.trouver(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-
 }

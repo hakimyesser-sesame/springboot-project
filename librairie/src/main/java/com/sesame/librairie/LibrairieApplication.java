@@ -1,4 +1,4 @@
-package librairie;
+package com.sesame.librairie;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

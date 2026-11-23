@@ -27,4 +27,24 @@ public class LivreService {
         Livre livre = new Livre(null, titre, auteur, annee);
         return livreRepository.save(livre);
     }
+
+    public Livre enregistrer(Livre livre) {
+        livre.setId(null);
+        return livreRepository.save(livre);
+    }
+    public Optional<Livre> modifier(Long id, Livre donnees) {
+        return livreRepository.findById(id).map(existant -> {
+            existant.setTitre(donnees.getTitre());
+            existant.setAuteur(donnees.getAuteur());
+            existant.setAnnee(donnees.getAnnee());
+            return livreRepository.save(existant);
+        });
+    }
+    public boolean supprimer(Long id) {
+        if (!livreRepository.existsById(id)) {
+            return false;
+        }
+        livreRepository.deleteById(id);
+        return true;
+    }
 }
